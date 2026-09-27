@@ -98,29 +98,66 @@ function handleQuery(query, config) {
     return null;
 }
 
+// Builds one tree node (and its subcommand children, if any) as a DOM element.
+function renderNode(name, cmd) {
+    const node = document.createElement('div');
+    node.className = 'node';
+
+    const names = [name, ...(cmd.aliases || [])].join(', ');
+    const flagList = cmd.flags ? Object.keys(cmd.flags).map(f => `--${f}`).join(' ') : '';
+
+    const row = document.createElement('div');
+    row.className = 'node-row';
+    row.innerHTML = `
+        <code class="cmd">${names}</code>
+        ${cmd.url ? `<span class="url">${cmd.url}</span>` : '<span class="url muted">subcommands below</span>'}
+        ${flagList ? `<span class="flags">${flagList}</span>` : ''}
+    `;
+    node.appendChild(row);
+
+    if (cmd.subcommands) {
+        const children = document.createElement('div');
+        children.className = 'children';
+        for (const [sub, subCmd] of Object.entries(cmd.subcommands)) {
+            children.appendChild(renderNode(sub, subCmd));
+        }
+        node.appendChild(children);
+    }
+
+    return node;
+}
+
 function renderHelp(config) {
     const base = window.location.href.split('?')[0];
     document.getElementById('search-url').textContent = `${base}?q=%s`;
 
-    const rows = [];
+    const groups = new Map();
     for (const [name, cmd] of Object.entries(config.links || {})) {
-        const names = [name, ...(cmd.aliases || [])].join(', ');
-        if (cmd.subcommands) {
-            for (const [sub, subCmd] of Object.entries(cmd.subcommands)) {
-                const flagList = subCmd.flags ? Object.keys(subCmd.flags).map(f => `--${f}`).join(', ') : '';
-                rows.push({ cmd: `${name} ${sub}`, url: subCmd.url, flags: flagList });
-            }
-        }
-        if (cmd.url) {
-            const flagList = cmd.flags ? Object.keys(cmd.flags).map(f => `--${f}`).join(', ') : '';
-            rows.push({ cmd: names, url: cmd.url, flags: flagList });
-        }
+        const group = cmd.group || 'Other';
+        if (!groups.has(group)) groups.set(group, []);
+        groups.get(group).push([name, cmd]);
     }
 
-    const tbody = document.getElementById('commands-body');
-    tbody.innerHTML = rows.map(r =>
-        `<tr><td><code>${r.cmd}</code></td><td>${r.url}</td><td>${r.flags}</td></tr>`
-    ).join('\n');
+    const container = document.getElementById('tree');
+    container.innerHTML = '';
+    for (const [group, entries] of groups) {
+        const section = document.createElement('section');
+        section.className = 'group';
+
+        const title = document.createElement('h2');
+        title.className = 'group-title';
+        title.textContent = group;
+        section.appendChild(title);
+
+        const tree = document.createElement('div');
+        tree.className = 'tree';
+        for (const [name, cmd] of entries) {
+            tree.appendChild(renderNode(name, cmd));
+        }
+        section.appendChild(tree);
+
+        container.appendChild(section);
+    }
 
     document.getElementById('help').style.display = '';
 }
