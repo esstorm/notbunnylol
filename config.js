@@ -53,7 +53,7 @@ const CONFIG = {
     },
 
     amz: {
-      url: 'https://www.amazon.com/s?k=$*',
+      url: 'https://www.amazon.co.uk/s?k=$*',
     },
 
     claude: {
