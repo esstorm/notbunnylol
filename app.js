@@ -65,12 +65,21 @@ function resolveUrl(cmdConfig, positional, flags) {
     return url;
 }
 
+// Looks up a command by name, or by one of its configured aliases.
+function findCommand(name, config) {
+    if (config.links?.[name]) return config.links[name];
+    for (const cmd of Object.values(config.links || {})) {
+        if (cmd.aliases?.includes(name)) return cmd;
+    }
+    return null;
+}
+
 function handleQuery(query, config) {
     const tokens = tokenize(query.trim());
     if (!tokens.length) return null;
 
     const [command, ...rest] = tokens;
-    const cmdConfig = config.links?.[command];
+    const cmdConfig = findCommand(command, config);
     if (!cmdConfig) return null;
 
     if (cmdConfig.subcommands && rest.length > 0) {
@@ -95,6 +104,7 @@ function renderHelp(config) {
 
     const rows = [];
     for (const [name, cmd] of Object.entries(config.links || {})) {
+        const names = [name, ...(cmd.aliases || [])].join(', ');
         if (cmd.subcommands) {
             for (const [sub, subCmd] of Object.entries(cmd.subcommands)) {
                 const flagList = subCmd.flags ? Object.keys(subCmd.flags).map(f => `--${f}`).join(', ') : '';
@@ -103,7 +113,7 @@ function renderHelp(config) {
         }
         if (cmd.url) {
             const flagList = cmd.flags ? Object.keys(cmd.flags).map(f => `--${f}`).join(', ') : '';
-            rows.push({ cmd: name, url: cmd.url, flags: flagList });
+            rows.push({ cmd: names, url: cmd.url, flags: flagList });
         }
     }
 

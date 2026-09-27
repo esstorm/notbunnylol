@@ -1,6 +1,7 @@
 // notbunnylol command config.
 // Edit this to add or modify commands, then commit + push.
 // $1, $2, ... = individual positional args, $* = all args joined by space.
+// aliases: ['other', 'names'] lets a command be triggered by more than one keyword.
 const CONFIG = {
   links: {
     gh: {
@@ -49,6 +50,39 @@ const CONFIG = {
 
     mdn: {
       url: 'https://developer.mozilla.org/en-US/search?q=$*',
+    },
+
+    amz: {
+      url: 'https://www.amazon.com/s?k=$*',
+    },
+
+    claude: {
+      url: 'https://claude.ai/new?q=$*',
+    },
+
+    ig: {
+      url: 'https://www.instagram.com/$1/', // profile lookup, Instagram has no public search endpoint
+    },
+
+    fb: {
+      url: 'https://www.facebook.com/$1', // profile/page lookup, Facebook has no public search endpoint
+    },
+
+    netflix: {
+      url: 'https://www.netflix.com/search?q=$*',
+    },
+
+    flights: {
+      url: 'https://www.google.com/travel/flights?q=$*', // loose text query only, no structured from/to/date
+    },
+
+    reddit: {
+      url: 'https://www.reddit.com/search/?q=$*',
+    },
+
+    tr: {
+      url: 'https://translate.google.com/?sl=auto&tl=en&text=$*&op=translate',
+      aliases: ['translate'],
     },
   },
 };

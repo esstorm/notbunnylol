@@ -38,8 +38,16 @@ Just open `index.html` directly in a browser (`file:///path/to/notbunnylol/index
 | `maps <place>` | `maps Shinjuku Tokyo` | Google Maps |
 | `npm <package>` | `npm express` | npm search |
 | `mdn <topic>` | `mdn Array.prototype.map` | MDN docs |
+| `amz <query>` | `amz mechanical keyboard` | Amazon search |
+| `claude <query>` | `claude what is the capital of peru` | Claude, prefilled new chat |
+| `ig <user>` | `ig torvalds` | Instagram profile |
+| `fb <user>` | `fb zuck` | Facebook profile/page |
+| `netflix <query>` | `netflix stranger things` | Netflix search |
+| `flights <query>` | `flights nyc to tokyo` | Google Flights |
+| `reddit <query>` | `reddit cats` | Reddit search |
+| `tr` / `translate <text>` | `tr hola como estas` | Google Translate |
 
-Unknown commands fall back to a Google search.
+Unknown commands fall back to a Google search. `ig` and `fb` go straight to a profile/page (`$1`) rather than searching — neither site has a public search URL.
 
 ## Flags
 
@@ -65,6 +73,7 @@ const CONFIG = {
       flags: {
         lang: 'language', // --lang python → &language=python
       },
+      aliases: ['other-name'], // both `cmd` and `other-name` trigger this entry
     },
     'cmd-with-subcommands': {
       subcommands: {
