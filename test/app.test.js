@@ -173,6 +173,20 @@ test('handleQuery against the real CONFIG', async (t) => {
             'https://drive.google.com/drive/search?q=type:presentation%20budget',
         );
     });
+
+    await t.test('falls back to emptyUrl instead of leaking an unfilled $1 placeholder', () => {
+        assert.equal(handleQuery('ig', CONFIG), 'https://www.instagram.com/');
+        assert.equal(handleQuery('ig ', CONFIG), 'https://www.instagram.com/');
+        assert.equal(handleQuery('fb', CONFIG), 'https://www.facebook.com/');
+        assert.equal(handleQuery('wiki', CONFIG), 'https://en.wikipedia.org/');
+        assert.equal(handleQuery('gh user', CONFIG), 'https://github.com/');
+    });
+
+    await t.test('still resolves ig/fb/wiki/gh user normally when an arg is given', () => {
+        assert.equal(handleQuery('ig torvalds', CONFIG), 'https://www.instagram.com/torvalds/');
+        assert.equal(handleQuery('fb zuck', CONFIG), 'https://www.facebook.com/zuck');
+        assert.equal(handleQuery('gh user torvalds', CONFIG), 'https://github.com/torvalds');
+    });
 });
 
 test('every configured command resolves to a valid absolute URL', () => {

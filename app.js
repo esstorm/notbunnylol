@@ -74,6 +74,18 @@ function findCommand(name, config) {
     return null;
 }
 
+// Resolves a command, falling back to emptyUrl (or null) when a required
+// $1/$2/... placeholder wasn't filled by a positional arg, so a command like
+// `ig` (https://www.instagram.com/$1/) typed with no args never leaks a
+// literal "$1" into the redirect URL.
+function resolveOrFallback(cmdConfig, positional, flags) {
+    const url = resolveUrl(cmdConfig, positional, flags);
+    if (/\$\d/.test(url)) {
+        return cmdConfig.emptyUrl || null;
+    }
+    return url;
+}
+
 function handleQuery(query, config) {
     const tokens = tokenize(query.trim());
     if (!tokens.length) return null;
@@ -86,14 +98,14 @@ function handleQuery(query, config) {
         const subConfig = cmdConfig.subcommands[rest[0]];
         if (subConfig) {
             const { flags, positional } = parseArgs(rest.slice(1));
-            return resolveUrl(subConfig, positional, flags);
+            return resolveOrFallback(subConfig, positional, flags);
         }
     }
 
     if (cmdConfig.url) {
         if (cmdConfig.emptyUrl && rest.length === 0) return cmdConfig.emptyUrl;
         const { flags, positional } = parseArgs(rest);
-        return resolveUrl(cmdConfig, positional, flags);
+        return resolveOrFallback(cmdConfig, positional, flags);
     }
 
     return null;

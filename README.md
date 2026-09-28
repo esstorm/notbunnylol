@@ -41,17 +41,17 @@ Or individually: `make test` (unit tests for the query-resolution logic in `app.
 | `gh repo <query>` | `gh repo myproject` | GitHub repository search |
 | `gh code <query>` | `gh code useState` | GitHub code search |
 | `gh pr <query>` | `gh pr fix login bug` | GitHub PR search |
-| `gh user <name>` | `gh user torvalds` | GitHub user profile |
+| `gh user [name]` | `gh user torvalds` | GitHub user profile, or github.com if no name |
 | `g <query>` | `g best ramen tokyo` | Google search |
 | `yt <query>` | `yt lo-fi beats` | YouTube search |
-| `wiki <article>` | `wiki Bézier curve` | Wikipedia article |
+| `wiki [article]` | `wiki Bézier curve` | Wikipedia article, or wikipedia.org if no article |
 | `maps <place>` | `maps Shinjuku Tokyo` | Google Maps |
 | `npm <package>` | `npm express` | npm search |
 | `mdn <topic>` | `mdn Array.prototype.map` | MDN docs |
 | `amazon` / `amz <query>` | `amz mechanical keyboard` | Amazon search |
 | `claude` / `cl <query>` | `claude what is the capital of peru` | Claude, prefilled new chat |
-| `ig <user>` | `ig torvalds` | Instagram profile |
-| `fb <user>` | `fb zuck` | Facebook profile/page |
+| `ig [user]` | `ig torvalds` | Instagram profile, or instagram.com if no user |
+| `fb [user]` | `fb zuck` | Facebook profile/page, or facebook.com if no user |
 | `netflix <query>` | `netflix stranger things` | Netflix search |
 | `flights` / `fl <query>` | `flights nyc to tokyo` | Google Flights |
 | `reddit` / `rd <query>` | `reddit cats` | Reddit search |
@@ -60,7 +60,7 @@ Or individually: `make test` (unit tests for the query-resolution logic in `app.
 | `sheets [query]` | `sheets budget` | Search your Drive for Sheets, or a new blank Sheet if no query |
 | `slides [query]` | `slides budget` | Search your Drive for Slides decks, or a new blank deck if no query |
 
-Unknown commands fall back to a Google search. `ig` and `fb` go straight to a profile/page (`$1`) rather than searching — neither site has a public search URL. `docs`, `sheets`, and `slides` require being signed in to Google, since they search your own Drive rather than a public index.
+Unknown commands fall back to a Google search. `ig` and `fb` go straight to a profile/page (`$1`) rather than searching — neither site has a public search URL. `docs`, `sheets`, and `slides` require being signed in to Google, since they search your own Drive rather than a public index. Commands that take a required `$1` (`ig`, `fb`, `wiki`, `gh user`) fall back to that site's homepage instead of a broken link when typed with no argument.
 
 ## Flags
 
@@ -87,12 +87,16 @@ const CONFIG = {
         lang: 'language', // --lang python → &language=python
       },
       aliases: ['other-name'], // both `cmd` and `other-name` trigger this entry
-      emptyUrl: 'https://example.com/new', // used instead of `url` when typed with no args
+      // used instead of `url` when typed with no args, or when a $1/$2/... in
+      // `url` isn't filled by a positional arg (so a required-arg command
+      // never redirects to a URL with a literal "$1" in it)
+      emptyUrl: 'https://example.com/new',
     },
     'cmd-with-subcommands': {
       subcommands: {
         sub: {
           url: 'https://example.com/$1',
+          emptyUrl: 'https://example.com/', // subcommands can set this too
         },
       },
     },

@@ -3,7 +3,8 @@
 // $1, $2, ... = individual positional args, $* = all args joined by space.
 // aliases: ['other', 'names'] lets a command be triggered by more than one keyword.
 // group: 'Name' clusters commands together in the help page tree view.
-// emptyUrl: used instead of url when the command is typed with no args at all.
+// emptyUrl: used instead of url when the command is typed with no args at all,
+//   or when a $1/$2/... in url wasn't filled by a positional arg.
 const CONFIG = {
   links: {
     gh: {
@@ -27,6 +28,7 @@ const CONFIG = {
         },
         user: {
           url: 'https://github.com/$1',
+          emptyUrl: 'https://github.com/',
         },
       },
     },
@@ -49,6 +51,7 @@ const CONFIG = {
     wiki: {
       group: 'Search',
       url: 'https://en.wikipedia.org/wiki/$1',
+      emptyUrl: 'https://en.wikipedia.org/',
     },
 
     maps: {
@@ -69,11 +72,13 @@ const CONFIG = {
     ig: {
       group: 'Social',
       url: 'https://www.instagram.com/$1/', // profile lookup, Instagram has no public search endpoint
+      emptyUrl: 'https://www.instagram.com/',
     },
 
     fb: {
       group: 'Social',
       url: 'https://www.facebook.com/$1', // profile/page lookup, Facebook has no public search endpoint
+      emptyUrl: 'https://www.facebook.com/',
     },
 
     reddit: {
