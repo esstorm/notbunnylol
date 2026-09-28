@@ -24,6 +24,16 @@ Then type `go gh repo myproject` in the address bar to use it.
 
 Just open `index.html` directly in a browser (`file:///path/to/notbunnylol/index.html`) — no server needed. Append `?q=gh+repo+myproject` to the URL to test a redirect.
 
+## Tests & linting
+
+Requires Node.js. Run everything with:
+
+```
+make check
+```
+
+Or individually: `make test` (unit tests for the query-resolution logic in `app.js`, via Node's built-in test runner) and `make lint` (ESLint). `make install` fetches dev dependencies (just ESLint) without running anything.
+
 ## Commands
 
 | Command | Example | Redirects to |

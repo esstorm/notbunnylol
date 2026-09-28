@@ -102,3 +102,8 @@ const CONFIG = {
     },
   },
 };
+
+// Expose CONFIG for unit tests (Node), without affecting browser usage.
+if (typeof module !== 'undefined') {
+    module.exports = CONFIG;
+}

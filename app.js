@@ -207,4 +207,9 @@ function main() {
     renderHelp(CONFIG);
 }
 
-main();
+if (typeof window !== 'undefined') main();
+
+// Expose the pure logic for unit tests (Node), without affecting browser usage.
+if (typeof module !== 'undefined') {
+    module.exports = { tokenize, parseArgs, resolveUrl, findCommand, handleQuery };
+}
