@@ -78,27 +78,46 @@ const CONFIG = {
     reddit: {
       group: 'Social',
       url: 'https://www.reddit.com/search/?q=$*',
+      aliases: ['rd'],
     },
 
-    amz: {
+    amazon: {
       group: 'Shopping',
       url: 'https://www.amazon.co.uk/s?k=$*',
+      aliases: ['amz'],
     },
 
     flights: {
       group: 'Travel',
       url: 'https://www.google.com/travel/flights?q=$*', // loose text query only, no structured from/to/date
+      aliases: ['fl'],
     },
 
     claude: {
       group: 'Tools',
       url: 'https://claude.ai/new?q=$*',
+      aliases: ['cl'],
     },
 
-    tr: {
+    translate: {
       group: 'Tools',
       url: 'https://translate.google.com/?sl=auto&tl=en&text=$*&op=translate',
-      aliases: ['translate'],
+      aliases: ['tr'],
+    },
+
+    docs: {
+      group: 'Docs',
+      url: 'https://docs.new', // opens a new blank Google Doc, no query support
+    },
+
+    sheets: {
+      group: 'Docs',
+      url: 'https://sheets.new', // opens a new blank Google Sheet, no query support
+    },
+
+    slides: {
+      group: 'Docs',
+      url: 'https://slides.new', // opens a new blank Google Slides deck, no query support
     },
   },
 };

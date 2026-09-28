@@ -48,16 +48,19 @@ Or individually: `make test` (unit tests for the query-resolution logic in `app.
 | `maps <place>` | `maps Shinjuku Tokyo` | Google Maps |
 | `npm <package>` | `npm express` | npm search |
 | `mdn <topic>` | `mdn Array.prototype.map` | MDN docs |
-| `amz <query>` | `amz mechanical keyboard` | Amazon search |
-| `claude <query>` | `claude what is the capital of peru` | Claude, prefilled new chat |
+| `amazon` / `amz <query>` | `amz mechanical keyboard` | Amazon search |
+| `claude` / `cl <query>` | `claude what is the capital of peru` | Claude, prefilled new chat |
 | `ig <user>` | `ig torvalds` | Instagram profile |
 | `fb <user>` | `fb zuck` | Facebook profile/page |
 | `netflix <query>` | `netflix stranger things` | Netflix search |
-| `flights <query>` | `flights nyc to tokyo` | Google Flights |
-| `reddit <query>` | `reddit cats` | Reddit search |
-| `tr` / `translate <text>` | `tr hola como estas` | Google Translate |
+| `flights` / `fl <query>` | `flights nyc to tokyo` | Google Flights |
+| `reddit` / `rd <query>` | `reddit cats` | Reddit search |
+| `translate` / `tr <text>` | `tr hola como estas` | Google Translate |
+| `docs` | `docs` | New blank Google Doc |
+| `sheets` | `sheets` | New blank Google Sheet |
+| `slides` | `slides` | New blank Google Slides deck |
 
-Unknown commands fall back to a Google search. `ig` and `fb` go straight to a profile/page (`$1`) rather than searching — neither site has a public search URL.
+Unknown commands fall back to a Google search. `ig` and `fb` go straight to a profile/page (`$1`) rather than searching — neither site has a public search URL. `docs`, `sheets`, and `slides` ignore any query — they just open a new blank file (Google's `.new` shortcuts don't support pre-filling a title or content).
 
 ## Flags
 

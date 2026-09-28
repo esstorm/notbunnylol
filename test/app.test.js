@@ -95,11 +95,11 @@ test('resolveUrl', async (t) => {
 
 test('findCommand', async (t) => {
     await t.test('finds a command by its primary name', () => {
-        assert.equal(findCommand('tr', CONFIG), CONFIG.links.tr);
+        assert.equal(findCommand('translate', CONFIG), CONFIG.links.translate);
     });
 
     await t.test('finds a command by alias', () => {
-        assert.equal(findCommand('translate', CONFIG), CONFIG.links.tr);
+        assert.equal(findCommand('tr', CONFIG), CONFIG.links.translate);
     });
 
     await t.test('returns null for an unknown command', () => {
