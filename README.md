@@ -56,11 +56,11 @@ Or individually: `make test` (unit tests for the query-resolution logic in `app.
 | `flights` / `fl <query>` | `flights nyc to tokyo` | Google Flights |
 | `reddit` / `rd <query>` | `reddit cats` | Reddit search |
 | `translate` / `tr <text>` | `tr hola como estas` | Google Translate |
-| `docs` | `docs` | New blank Google Doc |
-| `sheets` | `sheets` | New blank Google Sheet |
-| `slides` | `slides` | New blank Google Slides deck |
+| `docs [query]` | `docs budget` | Search your Drive for Docs, or a new blank Doc if no query |
+| `sheets [query]` | `sheets budget` | Search your Drive for Sheets, or a new blank Sheet if no query |
+| `slides [query]` | `slides budget` | Search your Drive for Slides decks, or a new blank deck if no query |
 
-Unknown commands fall back to a Google search. `ig` and `fb` go straight to a profile/page (`$1`) rather than searching — neither site has a public search URL. `docs`, `sheets`, and `slides` ignore any query — they just open a new blank file (Google's `.new` shortcuts don't support pre-filling a title or content).
+Unknown commands fall back to a Google search. `ig` and `fb` go straight to a profile/page (`$1`) rather than searching — neither site has a public search URL. `docs`, `sheets`, and `slides` require being signed in to Google, since they search your own Drive rather than a public index.
 
 ## Flags
 
@@ -87,6 +87,7 @@ const CONFIG = {
         lang: 'language', // --lang python → &language=python
       },
       aliases: ['other-name'], // both `cmd` and `other-name` trigger this entry
+      emptyUrl: 'https://example.com/new', // used instead of `url` when typed with no args
     },
     'cmd-with-subcommands': {
       subcommands: {

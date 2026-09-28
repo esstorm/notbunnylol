@@ -152,6 +152,27 @@ test('handleQuery against the real CONFIG', async (t) => {
     await t.test('returns null for an unknown subcommand under a valid command', () => {
         assert.equal(handleQuery('gh bogus notbunnylol', CONFIG), null);
     });
+
+    await t.test('uses emptyUrl when a command with no args is typed', () => {
+        assert.equal(handleQuery('docs', CONFIG), 'https://docs.new');
+        assert.equal(handleQuery('sheets', CONFIG), 'https://sheets.new');
+        assert.equal(handleQuery('slides', CONFIG), 'https://slides.new');
+    });
+
+    await t.test('searches Drive by type when args are given', () => {
+        assert.equal(
+            handleQuery('docs budget', CONFIG),
+            'https://drive.google.com/drive/search?q=type:document%20budget',
+        );
+        assert.equal(
+            handleQuery('sheets budget', CONFIG),
+            'https://drive.google.com/drive/search?q=type:spreadsheet%20budget',
+        );
+        assert.equal(
+            handleQuery('slides budget', CONFIG),
+            'https://drive.google.com/drive/search?q=type:presentation%20budget',
+        );
+    });
 });
 
 test('every configured command resolves to a valid absolute URL', () => {

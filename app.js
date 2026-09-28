@@ -91,6 +91,7 @@ function handleQuery(query, config) {
     }
 
     if (cmdConfig.url) {
+        if (cmdConfig.emptyUrl && rest.length === 0) return cmdConfig.emptyUrl;
         const { flags, positional } = parseArgs(rest);
         return resolveUrl(cmdConfig, positional, flags);
     }

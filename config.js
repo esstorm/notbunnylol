@@ -3,6 +3,7 @@
 // $1, $2, ... = individual positional args, $* = all args joined by space.
 // aliases: ['other', 'names'] lets a command be triggered by more than one keyword.
 // group: 'Name' clusters commands together in the help page tree view.
+// emptyUrl: used instead of url when the command is typed with no args at all.
 const CONFIG = {
   links: {
     gh: {
@@ -107,17 +108,20 @@ const CONFIG = {
 
     docs: {
       group: 'Docs',
-      url: 'https://docs.new', // opens a new blank Google Doc, no query support
+      url: 'https://drive.google.com/drive/search?q=type:document%20$*', // searches your Drive for matching Docs
+      emptyUrl: 'https://docs.new', // no args → new blank Doc
     },
 
     sheets: {
       group: 'Docs',
-      url: 'https://sheets.new', // opens a new blank Google Sheet, no query support
+      url: 'https://drive.google.com/drive/search?q=type:spreadsheet%20$*', // searches your Drive for matching Sheets
+      emptyUrl: 'https://sheets.new', // no args → new blank Sheet
     },
 
     slides: {
       group: 'Docs',
-      url: 'https://slides.new', // opens a new blank Google Slides deck, no query support
+      url: 'https://drive.google.com/drive/search?q=type:presentation%20$*', // searches your Drive for matching Slides decks
+      emptyUrl: 'https://slides.new', // no args → new blank Slides deck
     },
   },
 };
