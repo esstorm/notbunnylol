@@ -82,6 +82,20 @@
       white-space: nowrap;
     }
 
+    .menubar-inner .tagline {
+      color: var(--muted);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 640px) {
+      .menubar-inner .tagline {
+        display: none;
+      }
+    }
+
     .search-wrap {
       position: relative;
       flex: 1;
@@ -118,26 +132,6 @@
       border-radius: 4px;
       padding: 1px 6px;
       pointer-events: none;
-    }
-
-    header {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin: 0;
-      letter-spacing: -0.02em;
-    }
-
-    header p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
     }
 
     .setup {
@@ -242,6 +236,7 @@
     .cmd-table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
       font-size: 0.88rem;
     }
 
@@ -257,10 +252,21 @@
       white-space: nowrap;
     }
 
+    /* Fixed so the Command/Description boundary lines up across every
+       group's table, which each render as a separate <table>. */
+    .cmd-table th.cmd {
+      width: 170px;
+    }
+
     .cmd-table td {
       padding: 9px 10px;
       border-bottom: 1px solid var(--border);
       vertical-align: baseline;
+    }
+
+    .cmd-table td:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .cmd-table td .cmd {
@@ -271,7 +277,6 @@
     }
 
     .cmd-table .desc {
-      min-width: 160px;
       position: relative;
       padding-right: 30px;
     }
@@ -384,6 +389,7 @@
   <div id="menubar" hidden>
     <div class="menubar-inner">
       <span class="brand">🐇 notbunnylol</span>
+      <span class="tagline">a bunnylol-style redirector</span>
       <div class="search-wrap">
         <input type="text" id="cmd-search" placeholder="Search shortcuts" autocomplete="off" spellcheck="false" aria-label="Search shortcuts">
         <kbd>/</kbd>
@@ -392,10 +398,6 @@
   </div>
 
   <div id="help" hidden>
-    <header>
-      <h1>🐇 notbunnylol</h1>
-      <p>a bunnylol-style redirector</p>
-    </header>
     <div class="setup">
       Set your browser's custom search engine URL to:
       <code id="search-url"></code>
