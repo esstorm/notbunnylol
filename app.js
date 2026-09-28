@@ -127,6 +127,37 @@ function renderNode(name, cmd) {
     return node;
 }
 
+// Wires up the "try it out" bar: live-previews the resolved URL as the user
+// types, and opens it in a new tab on submit (so the help page stays open).
+function setupTryBar(config) {
+    const form = document.getElementById('try-form');
+    const input = document.getElementById('try-input');
+    const preview = document.getElementById('try-preview');
+
+    function resolve(query) {
+        return handleQuery(query, config) || `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    }
+
+    input.addEventListener('input', () => {
+        const query = input.value.trim();
+        if (!query) {
+            preview.textContent = '';
+            preview.className = 'try-preview';
+            return;
+        }
+        const matched = handleQuery(query, config);
+        preview.textContent = matched ? `→ ${matched}` : `→ ${resolve(query)} (no match, falls back to Google)`;
+        preview.className = matched ? 'try-preview' : 'try-preview muted';
+    });
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const query = input.value.trim();
+        if (!query) return;
+        window.open(resolve(query), '_blank', 'noopener');
+    });
+}
+
 function renderHelp(config) {
     const base = window.location.href.split('?')[0];
     document.getElementById('search-url').textContent = `${base}?q=%s`;
@@ -160,6 +191,7 @@ function renderHelp(config) {
     }
 
     document.getElementById('help').style.display = '';
+    setupTryBar(config);
 }
 
 function main() {

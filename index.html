@@ -84,6 +84,58 @@
       line-height: 1.6;
     }
 
+    .try-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .try-bar input {
+      flex: 1;
+      min-width: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.95rem;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .try-bar input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .try-bar button {
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 0 20px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .try-bar button:hover {
+      opacity: 0.9;
+    }
+
+    .try-preview {
+      min-height: 1.4em;
+      margin-bottom: 28px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .try-preview.muted {
+      color: var(--muted);
+      font-style: italic;
+    }
+
     code {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       background: var(--code-bg);
@@ -201,6 +253,11 @@
       <code id="search-url"></code>
       and the keyword to anything you like (e.g. <code>go</code>).
     </div>
+    <form id="try-form" class="try-bar">
+      <input type="text" id="try-input" placeholder="Try it out: gh repo notbunnylol" autocomplete="off" spellcheck="false">
+      <button type="submit">Go →</button>
+    </form>
+    <div id="try-preview" class="try-preview"></div>
     <div id="tree" class="card"></div>
     <footer>
       <a href="https://github.com/esstorm/notbunnylol">notbunnylol on GitHub</a>
