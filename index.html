@@ -40,6 +40,8 @@
 
     * { box-sizing: border-box; }
 
+    [hidden] { display: none !important; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
@@ -52,6 +54,70 @@
     #help {
       max-width: 860px;
       margin: 0 auto;
+    }
+
+    #menubar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: -48px -20px 32px;
+      padding: 10px 20px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .menubar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .menubar-inner .brand {
+      font-weight: 700;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      max-width: 320px;
+      margin-left: auto;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      font-size: 0.9rem;
+      padding: 8px 34px 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .search-wrap input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .search-wrap kbd {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      pointer-events: none;
     }
 
     header {
@@ -169,60 +235,132 @@
       margin: 0 0 8px;
     }
 
-    .tree {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .table-scroll {
+      overflow-x: auto;
     }
 
-    .node-row {
-      display: flex;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 8px 14px;
-      padding: 7px 10px;
-      border-radius: 8px;
-      transition: background 0.12s ease;
-      font-size: 0.92rem;
+    .cmd-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
     }
 
-    .node-row:hover {
-      background: var(--row-hover);
+    .cmd-table th {
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      padding: 0 10px 8px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
 
-    .node-row .cmd {
+    .cmd-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: baseline;
+    }
+
+    .cmd-table td .cmd {
       color: var(--accent);
       background: var(--accent-soft);
       font-weight: 600;
-      flex-shrink: 0;
+      white-space: nowrap;
     }
 
-    .node-row .url {
+    .cmd-table .desc {
+      min-width: 160px;
+      position: relative;
+      padding-right: 30px;
+    }
+
+    .cmd-row {
+      cursor: pointer;
+    }
+
+    .cmd-row:hover {
+      background: var(--row-hover);
+    }
+
+    .cmd-row:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .chevron {
+      position: absolute;
+      right: 10px;
+      top: 50%;
       color: var(--muted);
-      font-size: 0.85rem;
-      word-break: break-all;
-      flex: 1;
-      min-width: 200px;
+      font-size: 1.1rem;
+      line-height: 1;
+      transform: translateY(-50%) rotate(0deg);
+      transition: transform 0.15s ease;
     }
 
-    .node-row .url.muted {
-      font-style: italic;
+    .cmd-row[aria-expanded="true"] .chevron {
+      transform: translateY(-50%) rotate(90deg);
     }
 
-    .node-row .flags {
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      flex-shrink: 0;
+    .cmd-detail-row td {
+      padding: 0;
+      border-bottom: none;
     }
 
-    .children {
-      margin: 2px 0 2px 22px;
-      padding-left: 16px;
-      border-left: 2px solid var(--border);
+    .detail-collapse {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.2s ease;
+    }
+
+    .cmd-row[aria-expanded="true"] + .cmd-detail-row .detail-collapse {
+      grid-template-rows: 1fr;
+    }
+
+    .cmd-row[aria-expanded="true"] + .cmd-detail-row td {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .detail-item {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 4px 10px;
+      padding: 4px 10px 4px 34px;
+      font-size: 0.82rem;
+    }
+
+    .detail-item:first-child {
+      padding-top: 10px;
+    }
+
+    .detail-item:last-child {
+      padding-bottom: 10px;
+    }
+
+    .detail-label {
+      flex-shrink: 0;
+      min-width: 90px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .detail-item .url,
+    .detail-item .flags {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      word-break: break-all;
     }
 
     footer {
@@ -243,7 +381,17 @@
   </style>
 </head>
 <body>
-  <div id="help" style="display: none;">
+  <div id="menubar" hidden>
+    <div class="menubar-inner">
+      <span class="brand">🐇 notbunnylol</span>
+      <div class="search-wrap">
+        <input type="text" id="cmd-search" placeholder="Search shortcuts" autocomplete="off" spellcheck="false" aria-label="Search shortcuts">
+        <kbd>/</kbd>
+      </div>
+    </div>
+  </div>
+
+  <div id="help" hidden>
     <header>
       <h1>🐇 notbunnylol</h1>
       <p>a bunnylol-style redirector</p>

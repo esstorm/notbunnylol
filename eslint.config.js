@@ -12,6 +12,7 @@ module.exports = [
       globals: {
         window: 'readonly',
         document: 'readonly',
+        HTMLElement: 'readonly',
         URLSearchParams: 'readonly',
         URL: 'readonly',
         CONFIG: 'writable',

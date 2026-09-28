@@ -24,6 +24,10 @@ Then type `go gh repo myproject` in the address bar to use it.
 
 Just open `index.html` directly in a browser (`file:///path/to/notbunnylol/index.html`) — no server needed. Append `?q=gh+repo+myproject` to the URL to test a redirect.
 
+## Browsing the commands
+
+The help page has a sticky search bar at the top — press `/` anywhere on the page to jump to it, then type to filter the command list by name, description, example, or URL. Click a command's row (or focus it and press Enter/Space) to expand it and see its example, full redirect URL, and any flags.
+
 ## Tests & linting
 
 Requires Node.js. Run everything with:
@@ -82,6 +86,8 @@ Edit `config.js` to add or modify commands, then commit and push — GitHub Page
 const CONFIG = {
   links: {
     cmd: {
+      description: 'Search example.com', // shown on the help page
+      example: 'cmd django',              // shown on the help page
       url: 'https://example.com/search?q=$*', // $* = all args, $1 $2 = positional
       flags: {
         lang: 'language', // --lang python → &language=python

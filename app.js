@@ -111,33 +111,124 @@ function handleQuery(query, config) {
     return null;
 }
 
-// Builds one tree node (and its subcommand children, if any) as a DOM element.
-function renderNode(name, cmd) {
-    const node = document.createElement('div');
-    node.className = 'node';
-
-    const names = [name, ...(cmd.aliases || [])].join(', ');
-    const flagList = cmd.flags ? Object.keys(cmd.flags).map(f => `--${f}`).join(' ') : '';
-
-    const row = document.createElement('div');
-    row.className = 'node-row';
-    row.innerHTML = `
-        <code class="cmd">${names}</code>
-        ${cmd.url ? `<span class="url">${cmd.url}</span>` : '<span class="url muted">subcommands below</span>'}
-        ${flagList ? `<span class="flags">${flagList}</span>` : ''}
-    `;
-    node.appendChild(row);
-
-    if (cmd.subcommands) {
-        const children = document.createElement('div');
-        children.className = 'children';
-        for (const [sub, subCmd] of Object.entries(cmd.subcommands)) {
-            children.appendChild(renderNode(sub, subCmd));
+// Flattens CONFIG into one row per triggerable command, grouped by cmd.group.
+// A command with subcommands contributes one row per subcommand (labeled
+// "gh repo", "gh code", ...) rather than a nested tree, so every row stands
+// on its own in the table.
+function commandRows(config) {
+    const rows = [];
+    for (const [name, cmd] of Object.entries(config.links || {})) {
+        const group = cmd.group || 'Other';
+        if (cmd.subcommands) {
+            for (const [sub, subCmd] of Object.entries(cmd.subcommands)) {
+                rows.push({ group, label: `${name} ${sub}`, cmd: subCmd });
+            }
+        } else {
+            const label = [name, ...(cmd.aliases || [])].join(', ');
+            rows.push({ group, label, cmd });
         }
-        node.appendChild(children);
+    }
+    return rows;
+}
+
+// Builds a <tbody> for one command: a compact header row (Command +
+// Description) plus a detail row (Example / Redirects to / Flags) that
+// expands in place when the header row is clicked or activated via keyboard.
+// The pair shares one dataset.search blob so the "/" filter shows/hides both
+// as a unit.
+function renderRow({ label, cmd }) {
+    const tbody = document.createElement('tbody');
+    tbody.className = 'cmd-group';
+    tbody.dataset.search = [label, cmd.description, cmd.example, cmd.url]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+    const header = document.createElement('tr');
+    header.className = 'cmd-row';
+    header.tabIndex = 0;
+    header.setAttribute('role', 'button');
+    header.setAttribute('aria-expanded', 'false');
+    header.innerHTML = `
+        <td><code class="cmd">${label}</code></td>
+        <td class="desc">${cmd.description || ''}<span class="chevron" aria-hidden="true">&rsaquo;</span></td>
+    `;
+
+    function toggle() {
+        const expanded = header.getAttribute('aria-expanded') === 'true';
+        header.setAttribute('aria-expanded', String(!expanded));
+    }
+    header.addEventListener('click', toggle);
+    header.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        toggle();
+    });
+
+    const flagList = cmd.flags ? Object.keys(cmd.flags).map(f => `--${f}`).join(' ') : '';
+    const items = [];
+    if (cmd.example) {
+        items.push(`<div class="detail-item"><span class="detail-label">Example</span><code>${cmd.example}</code></div>`);
+    }
+    if (cmd.url) {
+        items.push(`<div class="detail-item"><span class="detail-label">Redirects to</span><span class="url">${cmd.url}</span></div>`);
+    }
+    if (flagList) {
+        items.push(`<div class="detail-item"><span class="detail-label">Flags</span><span class="flags">${flagList}</span></div>`);
     }
 
-    return node;
+    const detail = document.createElement('tr');
+    detail.className = 'cmd-detail-row';
+    detail.innerHTML = `
+        <td colspan="2">
+            <div class="detail-collapse"><div class="detail-inner">${items.join('')}</div></div>
+        </td>
+    `;
+
+    tbody.appendChild(header);
+    tbody.appendChild(detail);
+    return tbody;
+}
+
+// Wires up the "/" shortcut and live filtering for the command table: typing
+// hides non-matching command groups and any section left with none visible.
+function setupCommandSearch() {
+    const input = document.getElementById('cmd-search');
+    if (!input) return;
+
+    function applyFilter() {
+        const query = input.value.trim().toLowerCase();
+        document.querySelectorAll('#tree .group').forEach((section) => {
+            let anyVisible = false;
+            section.querySelectorAll('tbody.cmd-group').forEach((group) => {
+                const match = !query || group.dataset.search.includes(query);
+                group.hidden = !match;
+                if (match) anyVisible = true;
+            });
+            section.hidden = !anyVisible;
+        });
+    }
+
+    input.addEventListener('input', applyFilter);
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            input.value = '';
+            applyFilter();
+            input.blur();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== '/') return;
+        const target = event.target;
+        const isTyping = target instanceof HTMLElement
+            && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+        if (isTyping) return;
+        event.preventDefault();
+        input.focus();
+        input.select();
+    });
 }
 
 // Wires up the "try it out" bar: live-previews the resolved URL as the user
@@ -176,15 +267,14 @@ function renderHelp(config) {
     document.getElementById('search-url').textContent = `${base}?q=%s`;
 
     const groups = new Map();
-    for (const [name, cmd] of Object.entries(config.links || {})) {
-        const group = cmd.group || 'Other';
-        if (!groups.has(group)) groups.set(group, []);
-        groups.get(group).push([name, cmd]);
+    for (const row of commandRows(config)) {
+        if (!groups.has(row.group)) groups.set(row.group, []);
+        groups.get(row.group).push(row);
     }
 
     const container = document.getElementById('tree');
     container.innerHTML = '';
-    for (const [group, entries] of groups) {
+    for (const [group, rows] of groups) {
         const section = document.createElement('section');
         section.className = 'group';
 
@@ -193,18 +283,32 @@ function renderHelp(config) {
         title.textContent = group;
         section.appendChild(title);
 
-        const tree = document.createElement('div');
-        tree.className = 'tree';
-        for (const [name, cmd] of entries) {
-            tree.appendChild(renderNode(name, cmd));
+        const scroll = document.createElement('div');
+        scroll.className = 'table-scroll';
+
+        const table = document.createElement('table');
+        table.className = 'cmd-table';
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th class="cmd">Command</th>
+                    <th class="desc">Description</th>
+                </tr>
+            </thead>
+        `;
+        for (const row of rows) {
+            table.appendChild(renderRow(row));
         }
-        section.appendChild(tree);
+        scroll.appendChild(table);
+        section.appendChild(scroll);
 
         container.appendChild(section);
     }
 
-    document.getElementById('help').style.display = '';
+    document.getElementById('menubar').hidden = false;
+    document.getElementById('help').hidden = false;
     setupTryBar(config);
+    setupCommandSearch();
 }
 
 function main() {
